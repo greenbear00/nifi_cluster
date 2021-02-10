@@ -1,0 +1,41 @@
+version: '3'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - 2181:2181
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092 # and on kafka:29092 for access from other containers.
+      - 9092:9092 # the containerized Kafka broker listens on localhost:9092 for access from your host machine (e.g. your Mac laptop) 
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092 
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT  
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
+  nifi:
+    image: apache/nifi:latest
+    # container_name: nifi  # cluster로 띄울 경우에는 name 사용 안함
+    ports:
+      - 8080 #  # cluster로 띄울 경우에는 ports에 - 8080:8080이 아니라 - 8080으로만 설정해야 함
+    environment:
+      NIFI_WEB_HTTP_PORT: 8080
+      NIFI_CLUSTER_IS_NODE: "true"
+      NIFI_CLUSTER_NODE_PROTOCOL_PORT: 8082
+      NIFI_ZK_CONNECT_STRING: zookeeper:2181
+      NIFI_ELECTION_MAX_WAIT: 1 min
