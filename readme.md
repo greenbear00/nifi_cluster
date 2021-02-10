@@ -1,6 +1,7 @@
 # zookeeper, kafka, nifi(with cluster)
 ## nifi cluster 확인
 [nifi cluster] https://medium.com/@davide.gazze/an-example-of-nifi-cluster-using-docker-91921e955e52 
+
 [nifi 예제]]: https://towardsdatascience.com/big-data-managing-the-flow-of-data-with-apache-nifi-and-apache-kafka-af674cd8f926
 
 - cluster로 되어 있을경우, 아래 docker ps를 통해서 확인된 nifi port로 nifi 접근 가능
@@ -24,6 +25,7 @@ elk_home_credit_default_risk_zookeeper_1   /etc/confluent/docker/run   Up      2
 
 
 ## kafka 확인
+```
 $ docker-compose exec kafka kafka-topics --zookeeper zookeeper:2181 --list
 $ docker-compose exec kafka kafka-topics --create --topic test --partitions 1 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181
 $ docker-compose exec kafka kafka-topics --describe --topic test --zookeeper zookeeper:2181
@@ -34,3 +36,5 @@ $ docker-compose exec kafka kafka-console-producer --topic test --broker-list ka
 ddd>dddasdf
 >ddd
 >
+```
+
